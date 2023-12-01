@@ -9,6 +9,7 @@ import com.example.movieratingwebapp.dao.interfaces.ReviewDao;
 import com.example.movieratingwebapp.enums.UserStatus;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,10 @@ public class JdbcReviewDao implements ReviewDao {
     private final ConnectionPool connectionPool = ConnectionPool.getInstance();
 
     @Override
-    public List<Review> getReviewsByMovie(Movie movie) throws DaoException {
+    public List<Review> getReviewsByMovie(int movieId) throws DaoException {
         final String selectReviewsSql = "SELECT r.id, r.movie_id, r.text, r.rating, u.id, u.login, u.status " +
                 "FROM review r JOIN user u ON user_id = u.id " +
-                "WHERE r.movie_id = " + movie.getId();
+                "WHERE r.movie_id = " + movieId;
         List<Review> reviews = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
         try (var statement = connection.createStatement();
@@ -73,7 +74,22 @@ public class JdbcReviewDao implements ReviewDao {
     }
 
     @Override
-    public void addReview(Review review) throws DaoException {
+    public boolean UserHasReviewForMovie(int userId, int movieId) throws DaoException {
+        final String selectReviewsSql = "SELECT * FROM review WHERE user_id = " + userId +
+                " AND movie_id = " + movieId;
+        Connection connection = connectionPool.getConnection();
+        try (var statement = connection.createStatement();
+             var resultSet = statement.executeQuery(selectReviewsSql)) {
+            return resultSet.next();
+        } catch (SQLException e) {
+            throw new DaoException(e.getMessage());
+        } finally {
+            connectionPool.releaseConnection(connection);
+        }
+    }
+
+    @Override
+    public Review addReview(Review review) throws DaoException {
         final String sql = "INSERT INTO review(user_id, movie_id, text, rating) VALUES (?, ?, ?, ?)";
         Connection connection = connectionPool.getConnection();
         try (var statement = connection.prepareStatement(sql)) {
@@ -82,6 +98,12 @@ public class JdbcReviewDao implements ReviewDao {
             statement.setString(3, review.getText());
             statement.setInt(4, review.getRating());
             statement.executeUpdate();
+            try (var getIdStatement = connection.createStatement();
+                 ResultSet resultSet = getIdStatement.executeQuery("SELECT LAST_INSERT_ID()")) {
+                resultSet.next();
+                review.setId(resultSet.getInt(1));
+                return review;
+            }
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         } finally {

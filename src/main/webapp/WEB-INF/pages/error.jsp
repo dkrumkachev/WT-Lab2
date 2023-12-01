@@ -1,16 +1,12 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: dkrumkachev
-  Date: 2023-11-27
-  Time: 11:56 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<fmt:setLocale value='${sessionScope["language"]}'/>
+<fmt:setBundle basename="text"/>
 <html>
 <head>
-    <title>Error</title>
+    <title><fmt:message key="error"/></title>
 </head>
 <body>
-    <p>Error</p>
+    <p><fmt:message key="error"/></p>
 </body>
 </html>

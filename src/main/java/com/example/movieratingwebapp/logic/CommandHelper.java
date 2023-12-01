@@ -18,6 +18,14 @@ public final class CommandHelper {
         commands.put(CommandName.REGISTER, new RegistrationCommand());
         commands.put(CommandName.GET_MOVIES, new GetMoviesCommand());
         commands.put(CommandName.GET_MOVIE, new GetMovieCommand());
+        commands.put(CommandName.ADD_REVIEW, new AddReviewCommand());
+        commands.put(CommandName.GET_USER, new GetUserCommand());
+        commands.put(CommandName.ADD_GENRE, new AddGenreCommand());
+        commands.put(CommandName.ADD_MOVIE, new AddMovieCommand());
+        commands.put(CommandName.GET_USERS, new GetUsersCommand());
+        commands.put(CommandName.LOGOUT, new LogoutCommand());
+        commands.put(CommandName.DELETE_REVIEW, new DeleteReviewCommand());
+
     }
 
     public static CommandHelper getInstance() {

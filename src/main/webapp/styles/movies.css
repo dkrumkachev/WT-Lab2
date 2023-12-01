@@ -1,0 +1,31 @@
+.movie-img {
+    width: 10vw;
+    object-fit: scale-down;
+}
+
+.btn {
+    font-size: 16px;
+}
+
+.col {
+    font-size: 16px;
+}
+
+
+a:link:not(.btn), a:visited:not(.btn) {
+    color: black;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:hover:not(.btn):not(.movie-card) {
+    color: red;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.movie-card:hover {
+    color: black;
+    background-color: transparent;
+    text-decoration: none;
+}

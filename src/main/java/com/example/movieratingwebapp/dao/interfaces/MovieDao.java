@@ -12,7 +12,7 @@ public interface MovieDao {
 
     List<Movie> getMoviesByGenre(int genreId) throws DaoException;
 
-    void addMovie(Movie movie) throws DaoException;
+    Movie addMovie(Movie movie) throws DaoException;
 
     void updateMovie(Movie movie) throws DaoException;
 

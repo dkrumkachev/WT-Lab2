@@ -8,11 +8,13 @@ import com.example.movieratingwebapp.exceptions.DaoException;
 import java.util.List;
 
 public interface ReviewDao {
-    List<Review> getReviewsByMovie(Movie movie) throws DaoException;
+    List<Review> getReviewsByMovie(int movieId) throws DaoException;
 
     List<Review> getReviewsByUser(User user) throws DaoException;
 
-    void addReview(Review review) throws DaoException;
+    boolean UserHasReviewForMovie(int userId, int movieId) throws DaoException;
+
+    Review addReview(Review review) throws DaoException;
 
     void updateReview(Review review) throws DaoException;
 

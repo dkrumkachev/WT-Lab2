@@ -43,7 +43,7 @@ public class JdbcMovieDao implements MovieDao {
 
     @Override
     public List<Movie> getMovies() throws DaoException {
-        final String sql = "SELECT * FROM movie ORDER BY rating";
+        final String sql = "SELECT * FROM movie ORDER BY rating DESC";
         return getMoviesFromQuery(sql);
     }
 
@@ -53,7 +53,7 @@ public class JdbcMovieDao implements MovieDao {
         Connection connection = connectionPool.getConnection();
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
-            return resultSet.first() ? createMovieFromRow(resultSet) : null;
+            return resultSet.next() ? createMovieFromRow(resultSet) : null;
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         } finally {
@@ -70,7 +70,7 @@ public class JdbcMovieDao implements MovieDao {
     }
 
     @Override
-    public void addMovie(Movie movie) throws DaoException {
+    public Movie addMovie(Movie movie) throws DaoException {
         final String movieInsertSql = "INSERT INTO movie(title, year, description, director_name, imageUrl) " +
                 "VALUES (?, ?, ?, ?, ?)";
         final String genreInsertSql = "INSERT INTO m2m_genre_movie (genre_id, movie_id) VALUES (?, ?)";
@@ -83,20 +83,20 @@ public class JdbcMovieDao implements MovieDao {
             movieInsertStatement.setString(4, movie.getDirectorName());
             movieInsertStatement.setString(5, movie.getImageUrl());
             movieInsertStatement.executeUpdate();
-            int movieId;
             try (var getIdStatement = connection.createStatement();
                  ResultSet resultSet = getIdStatement.executeQuery("SELECT LAST_INSERT_ID()")) {
-                resultSet.first();
-                movieId = resultSet.getInt(1);
+                resultSet.next();
+                movie.setId(resultSet.getInt(1));
             }
             List<Genre> genres = movie.getGenres();
             if (genres != null) {
                 for (Genre genre : genres) {
                     genreInsertStatement.setInt(1, genre.getId());
-                    genreInsertStatement.setInt(2, movieId);
+                    genreInsertStatement.setInt(2, movie.getId());
                     genreInsertStatement.executeUpdate();
                 }
             }
+            return movie;
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         } finally {
